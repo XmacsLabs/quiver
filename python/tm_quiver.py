@@ -22,6 +22,21 @@ else:
 from subprocess import Popen, PIPE, STDOUT
 from tmpy.graph.latex import LaTeX
 from tmpy.protocol import *
+from tmpy.capture import CaptureStdout
+
+# Reference https://www.python.org/dev/peps/pep-0616/
+def removeprefix(self: str, prefix: str, /) -> str:
+    if self.startswith(prefix):
+        return self[len(prefix):]
+    else:
+        return self[:]
+
+def removesuffix(self: str, suffix: str, /) -> str:
+    # suffix='' should not call self[:-0].
+    if suffix and self.endswith(suffix):
+        return self[:-len(suffix)]
+    else:
+        return self[:]
 
 
 class Quiver(LaTeX):
@@ -31,7 +46,7 @@ class Quiver(LaTeX):
         the_plugin_path = get_plugin_path(name)
 
         self.pre_code = """
-\\usepackage{quiver}
+\\documentclass[tikz]{standalone}
 \\input "%s/latex/quiver.sty"
 \\begin{document}
 """ % (the_plugin_path)
@@ -41,16 +56,41 @@ class Quiver(LaTeX):
         self.message = "TeXmacs interface to quiver 1.1.0"
 
     def available(self):
-        if not super(LaTeX, self).available():
+        if not super(Quiver, self).available():
             return False
         for sty in ("standalone", "tikz"):
-            if len (super(TikZ, self).kpsewhich(sty + ".sty")) <= 0:
+            if len (super(Quiver, self).kpsewhich(sty + ".sty")) <= 0:
                 flush_err ("Failed to find " + sty +".sty,"
                            " please install the missing LaTeX packages\n")
                 return False
         return True
         
     def evaluate(self, code):
+        code = code.lstrip(' ').rstrip(' ')
+        code = removeprefix(code, "\\[")
+        code = removesuffix(code, "\\]")
         code = self.pre_code + "\n" + code + "\n" + self.post_code
         super(Quiver, self).evaluate(code)
+
+    # For Debugging
+    # def after_evaluate(self):
+    #    self.remove_tmp_dir()
+
+
+if (exists (tmpy_home_path)):
+        flush_verbatim ("WARNING: You are under develop mode using " + tmpy_home_path)
+        flush_newline (2)
+
+my_globals   = {}
+
+text = 'import builtins as __builtins__'
+CaptureStdout.capture (text, my_globals, "tm_quiver")
+
+current = Quiver()
+if not current.available():
+    flush_err ("Failed to launch the Quiver plugin, aborted!!!")
+    exit(-1)
+
+current.greet()
+current.main_loop()
 
