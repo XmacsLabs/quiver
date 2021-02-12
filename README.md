@@ -5,5 +5,5 @@
 git clone https://gitee.com/xmacs/quiver.git $HOME/.TeXmacs/plugins/quiver
 
 # For Windows
-git clone https://gitee.com/xmacs/quiver.gitt %APPDATA%\TeXmacs\plugins/quiver
+git clone https://gitee.com/xmacs/quiver.git %APPDATA%\TeXmacs\plugins/quiver
 ```
