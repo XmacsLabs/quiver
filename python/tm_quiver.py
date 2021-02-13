@@ -25,13 +25,13 @@ from tmpy.protocol import *
 from tmpy.capture import CaptureStdout
 
 # Reference https://www.python.org/dev/peps/pep-0616/
-def removeprefix(self: str, prefix: str, /) -> str:
+def removeprefix(self, prefix):
     if self.startswith(prefix):
         return self[len(prefix):]
     else:
         return self[:]
 
-def removesuffix(self: str, suffix: str, /) -> str:
+def removesuffix(self, suffix):
     # suffix='' should not call self[:-0].
     if suffix and self.endswith(suffix):
         return self[:-len(suffix)]
