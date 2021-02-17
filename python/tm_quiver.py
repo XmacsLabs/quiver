@@ -64,9 +64,18 @@ class Quiver(LaTeX):
                            " please install the missing LaTeX packages\n")
                 return False
         return True
+
+    def strip_comments(self, code):
+        result = ''
+        for line in code.split("\n"):
+            if not line.startswith('%'):
+                result = result + line + '\n'
+        return result
         
     def evaluate(self, code):
+        code = self.strip_comments(code)
         code = code.lstrip(' ').rstrip(' ')
+        code = code.lstrip('\n').rstrip('\n')
         code = removeprefix(code, "\\[")
         code = removesuffix(code, "\\]")
         code = self.pre_code + "\n" + code + "\n" + self.post_code
