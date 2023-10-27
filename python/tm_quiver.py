@@ -47,6 +47,7 @@ class Quiver(LaTeX):
 
         self.pre_code = """
 \\documentclass[tikz]{standalone}
+\\usepackage{amsmath}
 \\input "%s/latex/quiver.sty"
 \\begin{document}
 """ % (the_plugin_path)
